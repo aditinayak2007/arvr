@@ -2,12 +2,13 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { createProceduralCar } from './threeCarBuilder';
+import { resolveAssetUrl } from './assetHelper';
 
 let sharedDracoLoader = null;
 function getDracoLoader() {
   if (!sharedDracoLoader) {
     sharedDracoLoader = new DRACOLoader();
-    sharedDracoLoader.setDecoderPath('/draco/gltf/');
+    sharedDracoLoader.setDecoderPath(resolveAssetUrl('draco/gltf/'));
   }
   return sharedDracoLoader;
 }
@@ -16,13 +17,14 @@ function getDracoLoader() {
  * Loads a real luxury sports car 3D model, centers it, and configures metallic body paint materials.
  * Gracefully falls back to procedural car generator if model is unavailable.
  */
-export function loadRealisticCarModel(modelPath = '/models/sports-car.glb', colorHex = '#dc2626', finishType = 'metallic') {
+export function loadRealisticCarModel(modelPath = 'models/sports-car.glb', colorHex = '#dc2626', finishType = 'metallic') {
   return new Promise((resolve) => {
     const gltfLoader = new GLTFLoader();
     gltfLoader.setDRACOLoader(getDracoLoader());
 
+    const targetUrl = resolveAssetUrl(modelPath);
     gltfLoader.load(
-      modelPath,
+      targetUrl,
       (gltf) => {
         const carRoot = new THREE.Group();
         carRoot.name = 'RealisticCar';
@@ -156,8 +158,8 @@ export function loadRealisticCarModel(modelPath = '/models/sports-car.glb', colo
       undefined,
       (err) => {
         console.warn('Real GLB load failed for', modelPath, err);
-        if (modelPath !== '/models/sports-car.glb') {
-          loadRealisticCarModel('/models/sports-car.glb', colorHex, finishType).then(resolve);
+        if (!modelPath.includes('sports-car.glb')) {
+          loadRealisticCarModel('models/sports-car.glb', colorHex, finishType).then(resolve);
           return;
         }
         const fallback = createProceduralCar('Sports', colorHex, finishType);

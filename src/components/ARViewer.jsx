@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import ARCameraSimulator from './ARCameraSimulator';
 import MobileConnectModal from './MobileConnectModal';
+import { resolveAssetUrl } from '../utils/assetHelper';
 export default function ARViewer({ car, selectedColorHex }) {
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [showCameraAR, setShowCameraAR] = useState(false);
@@ -127,7 +128,7 @@ export default function ARViewer({ car, selectedColorHex }) {
         {/* Embedded Model Viewer */}
         <div className="mt-8 rounded-2xl overflow-hidden border border-white/10 bg-slate-950/70 p-4 max-w-xl mx-auto">
           <model-viewer
-            src={car?.model3D || '/models/sports-car.glb'}
+            src={resolveAssetUrl(car?.model3D || 'models/sports-car.glb')}
             poster={car.thumbnail}
             alt={car.model}
             ar
